@@ -1,39 +1,22 @@
 #include "lattice.h"
-#include <random>
+#include "math_utils.h"
 
-LatticeVector generateRandomLatticeVector(int dimension) {
-    LatticeVector vec;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(-100, 100);
-
-    for (int i = 0; i < dimension; ++i) {
-        vec.coordinates.push_back(dist(gen));
+// Simple LLL lattice reduction algorithm
+void lllReduction(std::vector<LatticeVector> &basis, int dimension) {
+    bool reduced = false;
+    while (!reduced) {
+        reduced = true;
+        for (size_t i = 1; i < basis.size(); ++i) {
+            for (size_t j = 0; j < i; ++j) {
+                int scalar = dotProduct(basis[i], basis[j]) / dotProduct(basis[j], basis[j]);
+                for (int k = 0; k < dimension; ++k) {
+                    basis[i].coordinates[k] -= scalar * basis[j].coordinates[k];
+                }
+            }
+            if (dotProduct(basis[i], basis[i]) < dotProduct(basis[i-1], basis[i-1])) {
+                std::swap(basis[i], basis[i-1]);
+                reduced = false;
+            }
+        }
     }
-
-    return vec;
-}
-
-LatticeVector addLatticeVectors(const LatticeVector &a, const LatticeVector &b) {
-    LatticeVector result;
-    for (size_t i = 0; i < a.coordinates.size(); ++i) {
-        result.coordinates.push_back(a.coordinates[i] + b.coordinates[i]);
-    }
-    return result;
-}
-
-LatticeVector subtractLatticeVectors(const LatticeVector &a, const LatticeVector &b) {
-    LatticeVector result;
-    for (size_t i = 0; i < a.coordinates.size(); ++i) {
-        result.coordinates.push_back(a.coordinates[i] - b.coordinates[i]);
-    }
-    return result;
-}
-
-int dotProduct(const LatticeVector &a, const LatticeVector &b) {
-    int result = 0;
-    for (size_t i = 0; i < a.coordinates.size(); ++i) {
-        result += a.coordinates[i] * b.coordinates[i];
-    }
-    return result;
 }
