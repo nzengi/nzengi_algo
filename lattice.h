@@ -14,4 +14,7 @@ LatticeVector addLatticeVectors(const LatticeVector &a, const LatticeVector &b);
 LatticeVector subtractLatticeVectors(const LatticeVector &a, const LatticeVector &b);
 int dotProduct(const LatticeVector &a, const LatticeVector &b);
 
+// LLL lattice reduction algorithm
+void lllReduction(std::vector<LatticeVector> &basis, int dimension);
+
 #endif // LATTICE_H
